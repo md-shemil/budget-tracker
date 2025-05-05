@@ -21,6 +21,50 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--light);
             line-height: 1.6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 30px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: var(--light);
+            font-size: 18px;
+            margin: 10px 0;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Main Content Area */
+        .content-container {
+            flex-grow: 1;
+            padding: 40px 30px;
+            overflow-y: auto;
         }
 
         .navbar {
@@ -84,19 +128,7 @@
             display: block;
         }
 
-        .container {
-            margin: auto;
-            padding: 40px 20px;
-            max-width: 900px;
-        }
-
-        h1 {
-            font-size: 32px;
-            color: #fff;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
+        /* Table */
         table {
             width: 100%;
             margin-top: 30px;
@@ -117,6 +149,7 @@
             font-weight: 600;
         }
 
+        /* Links */
         a {
             text-decoration: none;
             color: var(--blue);
@@ -131,37 +164,31 @@
             margin-top: 20px;
             text-align: center;
         }
+
     </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<div class="navbar">
+<!-- Sidebar -->
+<div class="sidebar">
     <h1>Budget Tracker</h1>
-    <div class="dropdown">
-        <button class="dropbtn">Menu ▾</button>
-        <div class="dropdown-content">
-            {% if session.get('user_id') %}
-                <a href="/account">My Account</a>
-                <a href="/income">Income</a>
-                <a href="/expense">Expense</a>
-                <a href="/add_loan">Loans</a>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/login">Login</a>
-                <a href="/signup">Signup</a>
-            {% endif %}
-        </div>
-    </div>
+    <a href="/account">My Account</a>
+    <a href="/income">Income</a>
+    <a href="/expense">Expense</a>
+    <a href="/add_loan">Loans</a>
+    <a href="/logout">Logout</a>
 </div>
 
 <!-- Main Content -->
-<div class="container">
-    <h1>Expense Transactions</h1>
+<div class="content-container">
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1>Expense Transactions</h1>
+    </div>
 
     <!-- Table for Transactions -->
-    <table class="min-w-full table-auto bg-white shadow-md rounded-lg">
-        <thead class="bg-red-500 text-white">
+    <table>
+        <thead>
             <tr>
                 <th class="px-4 py-2">Date</th>
                 <th class="px-4 py-2">Description</th>
@@ -182,10 +209,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <div class="back-btn">
-        <a href="{{ url_for('home') }}" class="hover:underline">Back to Home</a>
-    </div>
 </div>
 
 </body>

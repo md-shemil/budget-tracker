@@ -2,116 +2,90 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Management</title>
+    <title>Loan Management - Budget Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #667eea;
             --secondary: #764ba2;
             --light: #ffffff;
             --dark: #1e1e2f;
-            --blue: #1e88e5;
-            --dark-blue: #0d47a1;
             --glass-bg: rgba(255, 255, 255, 0.1);
         }
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--light);
-            line-height: 1.6;
-        }
-
-        .navbar {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(8px);
+            height: 100vh;
         }
 
-        .navbar h1 {
-            font-size: 28px;
+        /* Sidebar */
+        .sidebar {
+            width: 220px; /* Increased sidebar size */
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h2 {
             margin: 0;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 40px;
         }
 
-        .dropdown {
-            position: relative;
-        }
-
-        .dropbtn {
-            background: transparent;
-            color: var(--light);
-            border: 2px solid var(--light);
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .dropbtn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background: #fff;
-            border-radius: 6px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 1;
-            overflow: hidden;
-            min-width: 160px;
-        }
-
-        .dropdown-content a {
-            display: block;
-            padding: 12px 16px;
+        .sidebar a {
+            color: white;
             text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
         }
 
-        .dropdown-content a:hover {
-            background-color: #f0f0f0;
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
-        .dropdown:hover .dropdown-content {
-            display: block;
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
         }
 
         .content {
-            padding: 40px 20px;
-            max-width: 1100px;
-            margin: auto;
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 30px;
         }
 
+        /* Loan Form and Loan List */
         .left-section,
         .right-section {
-            width: 48%;
-            min-width: 300px;
-            flex: 1 1 300px;
+            width: 100%;
         }
 
-        .loan-form, .loan-list {
+        .loan-form,
+        .loan-list {
             background: var(--glass-bg);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 25px;
+            border-radius: 15px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         h3 {
             margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         input, select, textarea {
@@ -128,21 +102,22 @@
         }
 
         button {
-            background-color: #fff;
+            background-color: #ffffff;
             color: var(--secondary);
             border: none;
             padding: 12px;
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
-            width: 100%;
             font-weight: bold;
+            width: 100%;
         }
 
         button:hover {
             background-color: #f0f0f0;
         }
 
+        /* Table Styling */
         .table-container {
             overflow-x: auto;
         }
@@ -173,11 +148,6 @@
                 align-items: stretch;
             }
 
-            .left-section,
-            .right-section {
-                width: 100%;
-            }
-
             table {
                 font-size: 14px;
             }
@@ -186,70 +156,76 @@
 </head>
 <body>
 
-<div class="navbar">
-    <h1>Loan Management</h1>
-    <div class="dropdown">
-        <button class="dropbtn">Menu ▾</button>
-        <div class="dropdown-content">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Budget Tracker</h2>
+        {% if session.get('user_id') %}
+            <a href="/home">Home</a>
             <a href="/account">My Account</a>
-            <a href="/add_loan">Add Loan</a>
+            <a href="/income">Income</a>
+            <a href="/expense">Expense</a>
+            
             <a href="/logout">Logout</a>
-        </div>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/signup">Signup</a>
+        {% endif %}
     </div>
-</div>
+    
 
-<div class="content">
-    <div class="left-section">
-        <div class="loan-form">
-            <h3>Add New Loan</h3>
-            <form method="POST" action="/add_loan">
-                <input type="text" name="lender_name" placeholder="Lender Name" required>
-                <input type="number" name="amount" placeholder="Amount" required>
-                <input type="number" name="interest_rate" placeholder="Interest Rate (%)" required>
-                <input type="date" name="due_date" placeholder="Due Date" required>
-                <textarea name="description" placeholder="Description"></textarea>
-                <button type="submit">Add Loan</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="right-section">
-        <div class="loan-list">
-            <h3>Your Loans</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Lender Name</th>
-                            <th>Amount</th>
-                            <th>Interest Rate</th>
-                            <th>Due Date</th>
-                            <th>Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for loan in loans %}
-                        <tr>
-                            <td>{{ loan[2] }}</td>
-                            <td>{{ loan[3] }}</td>
-                            <td>{{ loan[5] }}%</td>
-                            <td>{{ loan[6] }}</td>
-                            <td>{{ loan[7] }}</td>
-                            <td>
-                                <form method="POST" action="/loan/{{ loan[0] }}/paid">
-                                    <button type="submit">Mark as Paid</button>
-                                </form>
-                                
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content">
+            <!-- Loan Table - Move to the top -->
+            <div class="loan-list">
+                <h3>Your Loans</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Lender Name</th>
+                                <th>Amount</th>
+                                <th>Interest Rate</th>
+                                <th>Due Date</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td>{{ loan[2] }}</td>
+                                <td>₹{{ loan[3] }}</td>
+                                <td>{{ loan[5] }}%</td>
+                                <td>{{ loan[6] }}</td>
+                                <td>{{ loan[7] }}</td>
+                                <td>
+                                    <form method="POST" action="/loan/{{ loan[0] }}/paid">
+                                        <button type="submit">Mark as Paid</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- Loan Form -->
+            <div class="loan-form">
+                <h3>Add New Loan</h3>
+                <form method="POST" action="/add_loan">
+                    <input type="text" name="lender_name" placeholder="Lender Name" required>
+                    <input type="number" name="amount" placeholder="Amount" required>
+                    <input type="number" name="interest_rate" placeholder="Interest Rate (%)" required>
+                    <input type="date" name="due_date" required>
+                    <textarea name="description" placeholder="Description"></textarea>
+                    <button type="submit">Add Loan</button>
+                </form>
+            </div>
+
         </div>
     </div>
-</div>
 
 </body>
 </html>

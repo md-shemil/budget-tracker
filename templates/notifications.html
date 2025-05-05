@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Budget Tracker</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --light: #ffffff;
+            --dark: #1e1e2f;
+            --blue: #1e88e5;
+            --dark-blue: #0d47a1;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            line-height: 1.6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 30px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: var(--light);
+            font-size: 18px;
+            margin: 10px 0;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .content-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px 30px;
+        }
+
+        .notifications-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .notification-card {
+            background: var(--glass-bg);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .notification-card h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .notification-card p {
+            font-size: 16px;
+            color: #b0bec5;
+        }
+
+        .notification-card .date {
+            font-size: 12px;
+            color: #90a4ae;
+            margin-top: 8px;
+        }
+
+        .notification-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h1>Budget Tracker</h1>
+        {% if session.get('user_id') %}
+            <a href="/account">My Account</a>
+            <a href="/income">Income</a>
+            <a href="/expense">Expense</a>
+            <a href="/add_loan">Loans</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/signup">Signup</a>
+        {% endif %}
+    </div>
+
+    <div class="content-container">
+        {% if session.get('user_id') %}
+            <h2 class="notifications-title">Your Notifications</h2>
+
+            {% if notifications %}
+                {% for notification in notifications %}
+                    <div class="notification-card">
+                        <h3>{{ notification[2] }}</h3>
+                        <p>{{ notification[3] }}</p>
+                        <p class="date">{{ notification[4] }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No notifications available at the moment.</p>
+            {% endif %}
+        {% else %}
+            <h3>Please log in to view your notifications.</h3>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>
