@@ -104,18 +104,46 @@ def add_transaction():
     if 'user_id' in session:
         user_id = session['user_id']
         desc = request.form['description']
-        amt = request.form['amount']
+        amt = float(request.form['amount'])
         t_type = request.form['type']
         today = date.today()
+
+        # Check current balance before adding expense
+        if t_type == 'Expense':
+            cursor.execute("SELECT SUM(amount) FROM transactions WHERE user_id = %s AND type = 'Income'", (user_id,))
+            total_income = cursor.fetchone()[0] or 0
+
+            cursor.execute("SELECT SUM(amount) FROM transactions WHERE user_id = %s AND type = 'Expense'", (user_id,))
+            total_expense = cursor.fetchone()[0] or 0
+
+            balance = total_income - total_expense
+
+            # Prevent adding expense if it exceeds the available balance
+            if amt > balance:
+                # Insert a notification into the notifications table
+                notification_message = f"Attempted expense of {amt} exceeds available balance."
+                cursor.execute("INSERT INTO notifications (user_id, message) VALUES (%s, %s)", (user_id, notification_message))
+                db.commit()
+
+                flash("Insufficient balance to add this expense", "danger")
+                return redirect(url_for('home'))
 
         cursor.execute("INSERT INTO transactions (user_id, date, description, amount, type) VALUES (%s, %s, %s, %s, %s)",
                        (user_id, today, desc, amt, t_type))
         db.commit()
+
+        # Insert a notification after successful transaction
+        if t_type == 'Expense':
+            notification_message = f"Expense of {amt} added successfully."
+            cursor.execute("INSERT INTO notifications (user_id, message) VALUES (%s, %s)", (user_id, notification_message))
+            db.commit()
+
         flash("Transaction Added!", "success")
         return redirect(url_for('home'))
     else:
         flash("Please login first", "danger")
         return redirect(url_for('login'))
+
 
 # ------------------ ADD LOAN ------------------
 @app.route('/add_loan', methods=['GET', 'POST'])
@@ -332,24 +360,35 @@ def mark_loan_paid(loan_id):
     amount, description = loan
     user_id = session['user_id']
 
+    # Get the current balance
+    cursor.execute("SELECT SUM(amount) FROM transactions WHERE user_id = %s AND type = 'Income'", (user_id,))
+    total_income = cursor.fetchone()[0] or 0
 
-    # Add to expense transactions
+    cursor.execute("SELECT SUM(amount) FROM transactions WHERE user_id = %s AND type = 'Expense'", (user_id,))
+    total_expense = cursor.fetchone()[0] or 0
+
+    balance = total_income - total_expense
+
+    # Check if the user has enough balance to pay off the loan
+    if amount > balance:
+        flash("Insufficient balance to mark the loan as paid.", "danger")
+        return redirect(url_for('add_loan'))
+
+    # Add the loan amount to expenses if balance is sufficient
     cursor.execute(
-    "INSERT INTO transactions (user_id, date, description, amount, type) VALUES (%s, NOW(), %s, %s, %s)",
-    (user_id, "loan", amount, "expense")
-)
-
+        "INSERT INTO transactions (user_id, date, description, amount, type) VALUES (%s, NOW(), %s, %s, %s)",
+        (user_id, "Loan repayment: " + description, amount, "Expense")
+    )
 
     # Optionally: delete or archive loan
     cursor.execute("DELETE FROM loans WHERE id = %s", (loan_id,))
-    
+
     conn.commit()
     cursor.close()
     conn.close()
 
     flash("Loan marked as paid and added to expenses.", "success")
     return redirect(url_for('add_loan'))
-
 
 
 # ------------------ LOGOUT ------------------
