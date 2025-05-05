@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Tracker - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --light: #ffffff;
+            --dark: #1e1e2f;
+            --blue: #1e88e5; /* blue for income */
+            --dark-blue: #0d47a1; /* dark blue for expense */
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(8px);
+        }
+
+        .navbar h1 {
+            font-size: 28px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropbtn {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid var(--light);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .dropbtn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 1;
+            overflow: hidden;
+            min-width: 160px;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .content {
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .left-section {
+            width: 45%;
+        }
+
+        .right-section {
+            width: 45%;
+        }
+
+        .summary {
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .summary p {
+            font-size: 18px;
+            margin: 6px 0;
+        }
+
+        .transaction-form {
+            background: var(--glass-bg);
+            padding: 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid #ccc;
+        }
+
+        button {
+            background-color: #fff;
+            color: var(--secondary);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
+        }
+
+        h2, h3 {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background-color: var(--glass-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .transaction-form, table {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        .download-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .download-btn button {
+            max-width: 220px;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            max-width: 500px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>Budget Tracker</h1>
+    <div class="dropdown">
+        <button class="dropbtn">Menu ▾</button>
+        <div class="dropdown-content">
+            {% if session.get('user_id') %}
+                <a href="/account">My Account</a>
+                <a href="/income">Income</a>
+                <a href="/expense">Expense</a>
+                <a href="/add_loan">Loans</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/signup">Signup</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    {% if session.get('user_id') %}
+        <div class="left-section">
+            <h2>Welcome, {{ username }}!</h2>
+            <div class="summary">
+                <p><strong>Total Income:</strong> ₹{{ total_income }}</p>
+                <p><strong>Total Expense:</strong> ₹{{ total_expense }}</p>
+                <p><strong>Current Balance:</strong> ₹{{ balance }}</p>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="chart-container">
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+            var incomeExpenseChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Income', 'Expense'],
+                    datasets: [{
+                        label: 'Income vs Expense',
+                        data: [{{ total_income }}, {{ total_expense }}], // Use the dynamic values here
+                        backgroundColor: ['#1e88e5', '#0d47a1'],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ₹' + tooltipItem.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% else %}
+        <h3>Please log in to access your budget tracker.</h3>
+    {% endif %}
+</div>
+
+<div class="transaction-form">
+    <h3>Add Transaction</h3>
+    <form action="/add_transaction" method="POST">
+        <input type="text" name="description" placeholder="Description" required>
+        <input type="number" step="0.01" name="amount" placeholder="Amount" required>
+        <select name="type" required>
+            <option value="">Select Type</option>
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+        </select>
+        <button type="submit">Add Transaction</button>
+    </form>
+</div>
+
+<div class="download-btn">
+    <form action="/download_pdf" method="get">
+        <button type="submit">Download Transactions (PDF)</button>
+    </form>
+</div>
+
+<h3>Your Transactions</h3>
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Type</th>
+    </tr>
+    {% for transaction in transactions %}
+    <tr>
+        <td>{{ transaction[2] }}</td>
+        <td>{{ transaction[3] }}</td>
+        <td>₹{{ transaction[4] }}</td>
+        <td>{{ transaction[5] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

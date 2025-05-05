@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            width: 350px;
+            margin: 20px auto;
+            color: #333;
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 12px;
+            width: 90%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        button {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0072ff;
+            text-decoration: none;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .danger {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Sign Up</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="{{ category }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Name" required><br>
+        <input type="text" name="user_id" placeholder="User ID" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="text" name="phone" placeholder="Phone Number" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required><br>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+</div>
+</body>
+</html>

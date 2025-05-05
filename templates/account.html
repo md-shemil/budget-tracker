@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Account - Budget Tracker</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu button {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .menu-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .menu-content a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .menu:hover .menu-content {
+            display: block;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h3, h4 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 12px 0;
+            color: #f0f0f0;
+        }
+
+        .btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            background: #ffffff;
+            color: #764ba2;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #e0d4f7;
+        }
+
+        .loan-list {
+            margin-top: 30px;
+        }
+
+        .loan-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        }
+
+        .loan-item p {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Budget Tracker</h2>
+    <div class="menu">
+        <button>Menu</button>
+        <div class="menu-content">
+            <a href="/home">Home</a>
+            <a href="/account">My Account</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h3>My Account</h3>
+    <p><strong>Username:</strong> {{ user[0] }}</p>
+    <p><strong>Email:</strong> {{ user[1] or 'N/A' }}</p>
+    <p><strong>Phone:</strong> {{ user[2] or 'N/A' }}</p>
+    <p><strong>User ID:</strong> {{ user[3] }}</p>
+    <button class="btn" onclick="window.location.href='/account_authenticate'">Edit Details</button>
+
+    <div class="loan-list">
+        {% if loans %}
+            <div class="loan-list">
+                {% if loans %}
+                    <h4>Loan Details</h4>
+                    {% for loan in loans %}
+                        <div class="loan-item">
+                            <p><strong>Lender:</strong> {{ loan[2] }}</p>  <!-- lender_name -->
+                            <p><strong>Status:</strong> {{ loan[7] or 'N/A' }}</p>  <!-- Assuming loan status is stored at index 7 -->
+                            <p><strong>Loan Amount:</strong> ₹{{ loan[3] }}</p>  <!-- amount -->
+                            <p><strong>Interest Rate:</strong> {{ loan[5] }}%</p>  <!-- interest_rate -->
+                            <p><strong>Next Due Date:</strong> {{ loan[6] }}</p>  <!-- due_date -->
+            
+                            <!-- <h5>EMI Details</h5>
+                            <p><strong>EMI Amount:</strong> ₹{{ loan[8] or 'N/A' }}</p>  
+                            <p><strong>Total EMI Period:</strong> {{ loan[9] or 'N/A' }} months</p> 
+                            <p><strong>Paid EMI:</strong> ₹{{ loan[10] or '0' }}</p>
+                            <p><strong>Remaining EMI:</strong> ₹{{ loan[4] }}</p>  -->
+            
+                           
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h4>Loan Details</h4>
+                    <p>No loan data available.</p>
+                {% endif %}
+            </div>            
+        {% else %}
+            <h4>Loan Details</h4>
+            <p>No loan data available.</p>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
